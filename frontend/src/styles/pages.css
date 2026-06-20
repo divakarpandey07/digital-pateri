@@ -1,0 +1,174 @@
+/* Homepage Styles */
+.hero-section {
+  padding: var(--spacing-xl) 0;
+  background: linear-gradient(185deg, #fef3c7, var(--bg-cream));
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.hero-title {
+  font-size: 3rem;
+  font-family: var(--font-serif);
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+}
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto var(--spacing-lg);
+}
+.hero-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Counters statistics grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+.stat-card {
+  text-align: center;
+  padding: var(--spacing-md);
+}
+.stat-num {
+  font-size: 2.25rem;
+  font-family: var(--font-serif);
+  color: var(--secondary);
+  font-weight: 700;
+}
+.stat-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+/* Today widget */
+.today-widget {
+  background: linear-gradient(135deg, #fffbeb, #fafaf9);
+  border: 1.5px solid var(--accent);
+}
+
+/* Map Containers */
+.map-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+@media (max-width: 768px) {
+  .map-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.svg-map-wrapper {
+  background: #fdfbf7;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+.svg-map-node {
+  fill: #f5f5f4;
+  stroke: var(--text-muted);
+  stroke-width: 1.5px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.svg-map-node:hover {
+  fill: #e7e5e4;
+  stroke: var(--primary);
+}
+.svg-map-node.active {
+  fill: rgba(4, 120, 87, 0.15);
+  stroke: var(--primary);
+  stroke-width: 2px;
+}
+
+/* Directory list styling */
+.directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+.resident-row-card {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+.resident-avatar {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+}
+
+/* Historical Timeline list */
+.timeline-list {
+  position: relative;
+  margin: var(--spacing-lg) 0;
+  padding-left: var(--spacing-lg);
+  border-left: 2px solid var(--accent);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+.timeline-badge {
+  position: absolute;
+  left: -29px;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--secondary);
+  border: 3px solid var(--bg-cream);
+}
+.timeline-year {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--secondary);
+  font-weight: bold;
+}
+
+/* Heatmap marker style overrides for leaflet mapping */
+.leaflet-container {
+  height: 350px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  z-index: 1;
+}
+
+/* Live Feed listing */
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+.feed-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.feed-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
