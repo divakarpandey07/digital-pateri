@@ -212,6 +212,7 @@ const runSeeder = async () => {
       } else if (v.name === 'Yogesh Pandey' || (v.name && v.name.toLowerCase().includes('yogesh') && v.name.toLowerCase().includes('pandey'))) {
         resObj.occupation = 'Priest / Pandit';
         resObj.mobile = '8004695027';
+        resObj.education = 'Graduate (Economics, BHU)';
         resObj.reputationPoints = 200; // Silver Citizen
       } else if (v.name === 'Gandhi Yadav' || (v.name && v.name.toLowerCase().includes('gandhi') && v.name.toLowerCase().includes('yadav'))) {
         resObj.occupation = 'Dairy / Doodh Wale';
