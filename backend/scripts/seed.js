@@ -140,6 +140,38 @@ const runSeeder = async () => {
     };
     rawVoters.push(naushadKhanObj);
 
+    // Satyam Kumar Singh (Ward No. 01)
+    const satyamSinghObj = {
+      ac: "213",
+      part: "91",
+      serial: 9997,
+      house: "101",
+      ward: "01",
+      name: "Satyam Kumar Singh",
+      relationType: "Father",
+      relativeName: "Rakesh Kumar Singh",
+      epic: "EPIC9997IN",
+      gender: "Male",
+      age: 24
+    };
+    rawVoters.push(satyamSinghObj);
+
+    // Abhishek Singh (Ward No. 06)
+    const abhishekSinghObj = {
+      ac: "213",
+      part: "91",
+      serial: 9996,
+      house: "102",
+      ward: "06",
+      name: "Abhishek Singh",
+      relationType: "Father",
+      relativeName: "Manoj Singh",
+      epic: "EPIC9996IN",
+      gender: "Male",
+      age: 26
+    };
+    rawVoters.push(abhishekSinghObj);
+
     // Build the residents array
     const residentsToCreate = [];
     const nameToResidentMap = new Map();
