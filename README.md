@@ -126,20 +126,11 @@ digital-pateri/
 
 ---
 
-## 👤 Default Accounts (After Seeding)
+## 👤 Access
 
-| Role | Email | Password |
-|------|-------|----------|
-| Super Admin | `admin@pateri.in` | `admin123` |
-| Mukhiya | `panchayat@pateri.in` | `panchayat123` |
-| Sarpanch | `sarpanch@pateri.in` | `sarpanch123` |
-| Doctor | `haidar@pateri.in` | `haidar123` |
-| Volunteer/Student | `manish@pateri.in` | `manish123` |
-| Electrician | `pappu@pateri.in` | `pappu123` |
-| Shop Owner | `shanti@pateri.in` | `shanti123` |
-| PACS Adhyaksh | `naushad@pateri.in` | `naushad123` |
+Default accounts are created after running `npm run seed`. Contact the Panchayat administrator for login credentials.
 
-> ⚠️ Change passwords in production before deploying publicly.
+> 🔒 Credentials are not shared publicly for security reasons.
 
 ---
 

@@ -1,14 +1,12 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-// Setup axios instance
+// Setup axios instance with dynamic base URL
 const api = axios.create({
   baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  headers: { 'Content-Type': 'application/json' }
 });
 
 // Interceptor to attach token
