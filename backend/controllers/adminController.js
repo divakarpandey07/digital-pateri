@@ -46,7 +46,7 @@ exports.triggerSeed = async (req, res, next) => {
     const siteConfig = await SiteConfig.create({
       villageId: village._id,
       emergencyContacts: {
-        mukhiya: '+91 9473385741',
+        mukhiya: '+91 7903752442',
         police: '112',
         ambulance: '102',
         hospital: '+91 6189 224488'
@@ -355,7 +355,7 @@ exports.triggerSeed = async (req, res, next) => {
       {
         topic: 'Emergency Help Contacts',
         keywords: ['emergency', 'helpline', 'ambulance', 'hospital', 'police', 'mukhiya', 'doctor', 'number', 'phone'],
-        content: 'Digital Pateri Emergency Contacts list: \n1. Mukhiya: +91 9473385741 \n2. Police Helpline: 112 \n3. Ambulance Service: 102.'
+        content: 'Digital Pateri Emergency Contacts list: \n1. Mukhiya: +91 7903752442 \n2. Police Helpline: 112 \n3. Ambulance Service: 102.'
       }
     ]);
 

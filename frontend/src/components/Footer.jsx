@@ -51,7 +51,7 @@ function Footer() {
             </h3>
             <ul style={{ listStyle: 'none', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Phone size={14} color="#ef4444" /> Mukhiya: <strong>+91 9473385741</strong>
+                <Phone size={14} color="#ef4444" /> Mukhiya: <strong>+91 7903752442</strong>
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Phone size={14} color="#ef4444" /> Police Thana Chand: <strong>112</strong>

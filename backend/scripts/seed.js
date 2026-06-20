@@ -485,7 +485,7 @@ const runSeeder = async () => {
     await SiteConfig.create({
       villageId: village._id,
       emergencyContacts: {
-        mukhiya: 'Reshad Khan (+91 9473385741)',
+        mukhiya: 'Reshad Khan (+91 7903752442)',
         police: '112 (Thana Chand)',
         ambulance: '102',
         hospital: '+91 6189 224488'
@@ -753,7 +753,7 @@ const runSeeder = async () => {
       {
         topic: 'Emergency Help Contacts',
         keywords: ['emergency', 'helpline', 'ambulance', 'hospital', 'police', 'mukhiya', 'doctor', 'number', 'phone'],
-        content: 'Digital Pateri Emergency Contacts list: \n1. Mukhiya (Reshad Khan): +91 9473385741 \n2. Sarpanch (Gyashuddin): +91 9473385742 \n3. PACS Adhyaksh (Naushad Khan): +91 9473385743 \n4. Police Helpline: 112 (Thana Chand) \n5. Ambulance Service: 102 \n6. Sub-divisional Hospital (Bhabua): +91 6189 224488.'
+        content: 'Digital Pateri Emergency Contacts list: \n1. Mukhiya (Reshad Khan): +91 7903752442 \n2. Sarpanch (Gyashuddin): +91 9473385742 \n3. PACS Adhyaksh (Naushad Khan): +91 9473385743 \n4. Police Helpline: 112 (Thana Chand) \n5. Ambulance Service: 102 \n6. Sub-divisional Hospital (Bhabua): +91 6189 224488.'
       }
     ]);
 

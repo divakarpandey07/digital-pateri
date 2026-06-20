@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
 export const useStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem('pateri_user')) || null,
   token: localStorage.getItem('pateri_token') || null,
-  villageId: '6a27d93cf34b521ef83ba189', // Actual Pateri Database ID
+  villageId: '6a364068d5b21cfca52c0b1b', // Actual Pateri Database ID
   village: null,
   config: null,
   statistics: null,
@@ -97,7 +97,7 @@ export const useStore = create((set, get) => ({
     try {
       let targetId = id;
       // If using the fallback ID, resolve to the first active village in the DB
-      if (targetId === '6664d999f999f999f999f999') {
+      if (targetId === '6664d999f999f999f999f999' || targetId === '6a27d93cf34b521ef83ba189') {
         try {
           const listRes = await api.get('/villages');
           const firstVillage = listRes.data?.data?.records?.[0];

@@ -242,7 +242,7 @@ const getLocalFallbackResponse = (query) => {
     return "Namaskar! 🙏 Digital Pateri AI Assistant me aapka swagat hai. Main gaon ke verified residents, kheti-baari (Crop Library), mandi rates, emergency contacts, notice board aur schemes ki jankari de sakta hoon.\n\nAgar aap Pateri ke niwasi hain, toh kripya apna name batayein (E.g. *\"Hello, I am [Apna Name]\"*) taaki main aapki profile verify kar sakoon!";
   }
   
-  return "Digital Pateri database me iska koi matching answer nahi mila. Aap emergency helpline (/sos), schemes (/services), crops (/agriculture), dashboard analytics (/demographics) aur notices (/notices) check kar sakte hain. Emergency support ke liye Mukhiya (+91 9473385741) se contact karein.";
+  return "Digital Pateri database me iska koi matching answer nahi mila. Aap emergency helpline (/sos), schemes (/services), crops (/agriculture), dashboard analytics (/demographics) aur notices (/notices) check kar sakte hain. Emergency support ke liye Mukhiya (+91 7903752442) se contact karein.";
 };
 
 // Intent classifier for chatbot
@@ -748,7 +748,7 @@ exports.queryChatbot = async (req, res, next) => {
           .populate({ path: 'residentId', select: 'name mobile' });
 
         if (donors.length === 0) {
-          reply = `Mujhe Pateri me ${bg} blood group ka koi active donor nahi mila. Emergency me please Mukhiya Office (+91 9473385741) me call karein.`;
+          reply = `Mujhe Pateri me ${bg} blood group ka koi active donor nahi mila. Emergency me please Mukhiya Office (+91 7903752442) me call karein.`;
         } else {
           reply = `🩸 **Active ${bg} Blood Donors in Pateri:**\n\n` + 
             donors.map(d => `- **${d.residentId.name}** | Contact: +91 ${d.residentId.mobile}`).join('\n') +
@@ -762,7 +762,7 @@ exports.queryChatbot = async (req, res, next) => {
         reply = `🚨 **Pateri Emergency SOS System & Helplines:**\n\n` +
           `**SOS Button working:** Agar aap /sos page par jaakar Emergency SOS trigger button ko hold karenge, toh system aapki live GPS coordinates aur details Panchayat Admin aur nearby active volunteers ko alert notification ke roop me instant send karega.\n\n` +
           `**Pateri Emergency Helplines:**\n` +
-          `- **Mukhiya (Reshad Khan):** +91 9473385741\n` +
+          `- **Mukhiya (Reshad Khan):** +91 7903752442\n` +
           `- **Sarpanch (Gyashuddin):** +91 9473385742\n` +
           `- **PACS Adhyaksh (Naushad Khan):** +91 9473385743\n` +
           `- **Ambulance:** 102\n` +

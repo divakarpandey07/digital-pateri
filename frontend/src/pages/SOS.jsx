@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore';
 import { ShieldAlert, AlertTriangle, Shield, Phone, Flame, HeartPulse, UserCheck, Droplet, Zap } from 'lucide-react';
 
 const EMERGENCY_CONTACTS = [
-  { role: 'Mukhiya (Reshad Khan)', phone: '+91 9473385741', icon: '👤' },
+  { role: 'Mukhiya (Reshad Khan)', phone: '+91 7903752442', icon: '👤' },
   { role: 'Sarpanch (Gyashuddin)', phone: '+91 9473385742', icon: '⚖️' },
   { role: 'Police Helpline (Chand)', phone: '112', icon: '🚓' },
   { role: 'Ambulance Service', phone: '102', icon: '🚑' },
