@@ -4,8 +4,8 @@ import { Search, UserCheck, X, Users, BookOpen, Edit3, Save, Phone, MapPin, Awar
 import FamilyTree from '../components/FamilyTree';
 import axios from 'axios';
 
-// Axios instance with token — works on localhost and production
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// Axios instance with token — works on localhost (vite proxy) and production (VITE_API_URL)
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 const api = axios.create({ baseURL: API_BASE });
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('pateri_token');

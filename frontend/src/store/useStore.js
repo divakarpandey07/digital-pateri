@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// In development, vite proxy handles /api -> localhost:5000
+// In production, VITE_API_URL points to Render backend
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Setup axios instance with dynamic base URL
 const api = axios.create({
