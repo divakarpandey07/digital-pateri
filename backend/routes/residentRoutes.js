@@ -4,6 +4,7 @@ const {
   getResidents, 
   getResidentById, 
   createResident, 
+  updateResident,
   deleteResident,
   requestClaimOtp,
   verifyAndClaimResident,
@@ -26,6 +27,8 @@ router.post('/certificates', protect, requestCertificate);
 
 router.get('/:id', optionalProtect, getResidentById);
 router.post('/', protect, authorize('Panchayat Admin', 'Super Admin'), createResident);
+router.put('/:id', protect, updateResident);
 router.delete('/:id', protect, authorize('Panchayat Admin', 'Super Admin'), deleteResident);
 
 module.exports = router;
+

@@ -7,34 +7,47 @@ const filterResidentFields = (resident, user) => {
 
   const obj = resident.toObject ? resident.toObject() : resident;
   
+  // Admin or profile owner → full data
   if (isAdmin || isOwner) {
     return obj;
   }
   
   if (user) {
-    // Logged-in Resident: Ward, volunteer status, reputation points/badge visible
+    // Any logged-in resident → all standard profile info (no sensitive govt IDs)
     return {
       _id: obj._id,
       residentId: obj.residentId,
       name: obj.name,
+      fatherName: obj.fatherName,
+      dob: obj.dob,
       gender: obj.gender,
       occupation: obj.occupation,
       education: obj.education,
       bloodGroup: obj.bloodGroup,
+      skills: obj.skills,
       ward: obj.ward,
+      houseNo: obj.houseNo,
+      address: obj.address,
+      mohalla: obj.mohalla,
+      mobile: obj.mobile,
       reputationPoints: obj.reputationPoints,
       verificationStatus: obj.verificationStatus,
       panchayatRole: obj.panchayatRole,
-      photo: obj.photo
+      photo: obj.photo,
+      latitude: obj.latitude,
+      longitude: obj.longitude,
+      relations: obj.relations,
+      isPublicProfile: obj.isPublicProfile
     };
   }
   
-  // Guest: strictly Name, Occupation, Village, verification badge, photo
+  // Guest: only basic public info
   return {
     _id: obj._id,
     name: obj.name,
     gender: obj.gender,
     occupation: obj.occupation,
+    ward: obj.ward,
     verificationStatus: obj.verificationStatus,
     panchayatRole: obj.panchayatRole,
     photo: obj.photo
@@ -255,6 +268,51 @@ exports.createResident = async (req, res, next) => {
       success: true,
       data: resident
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update resident profile
+// @route   PUT /api/v1/residents/:id
+// @access  Private (Admin: any field | Owner: limited fields)
+exports.updateResident = async (req, res, next) => {
+  try {
+    const resident = await Resident.findById(req.params.id);
+    if (!resident || resident.isDeleted) {
+      return res.status(404).json({ success: false, message: 'Resident profile not found', errorCode: 'RESOURCE_NOT_FOUND' });
+    }
+
+    const isAdmin = req.user && req.user.roles.some(r => ['Super Admin', 'Panchayat Admin'].includes(r));
+    const isOwner = req.user && req.user.residentProfile && req.user.residentProfile.toString() === resident._id.toString();
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ success: false, message: 'Not authorized to update this profile', errorCode: 'FORBIDDEN_OPERATION' });
+    }
+
+    // Admin can update all fields; owner gets a restricted list
+    const adminFields = [
+      'name', 'fatherName', 'dob', 'gender', 'address', 'mohalla', 'ward', 'houseNo',
+      'occupation', 'skills', 'education', 'bloodGroup', 'mobile', 'emergencyContact',
+      'photo', 'isPublicProfile', 'panchayatRole', 'verificationStatus', 'reputationPoints',
+      'aadhaarLast4', 'voterId', 'rationCardNumber', 'cardType', 'fpsDealer', 'familyId',
+      'latitude', 'longitude'
+    ];
+
+    const ownerFields = [
+      'occupation', 'skills', 'education', 'bloodGroup', 'mobile', 'emergencyContact', 'photo', 'isPublicProfile'
+    ];
+
+    const allowedFields = isAdmin ? adminFields : ownerFields;
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        resident[field] = req.body[field];
+      }
+    });
+
+    await resident.save();
+
+    res.status(200).json({ success: true, data: resident });
   } catch (error) {
     next(error);
   }
