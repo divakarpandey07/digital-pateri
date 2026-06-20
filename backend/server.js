@@ -24,8 +24,20 @@ app.use((req, res, next) => {
 app.use(helmet());
 
 // Configure CORS
+const allowedOrigins = [
+  'https://digital-pateri.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || process.env.CORS_ORIGIN === '*') {
+      return callback(null, true);
+    }
+    return callback(null, true); // Allow all for now — tighten in production
+  },
   credentials: true
 }));
 
