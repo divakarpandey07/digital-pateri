@@ -67,10 +67,10 @@ export const useStore = create((set, get) => ({
     }
   },
 
-  register: async (name, email, password, ward, voterId) => {
+  register: async (name, email, password, ward, voterId, mobile) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await api.post('/auth/register', { name, email, password, ward, voterId });
+      const res = await api.post('/auth/register', { name, email, password, ward, voterId, mobile });
       const { token, user } = res.data.data;
       
       localStorage.setItem('pateri_token', token);

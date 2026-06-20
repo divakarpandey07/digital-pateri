@@ -187,7 +187,7 @@ const runSeeder = async () => {
       if (v.name === 'Reshad Khan') {
         resObj.panchayatRole = 'Mukhiya';
         resObj.occupation = 'Mukhiya';
-        resObj.mobile = '9473385741';
+        resObj.mobile = '7903752442'; // Real mobile number
         resObj.education = 'Graduate';
         resObj.bloodGroup = 'O+';
         resObj.reputationPoints = 620; // Pateri Hero!
@@ -209,6 +209,14 @@ const runSeeder = async () => {
         resObj.education = 'Graduate';
         resObj.bloodGroup = 'A+';
         resObj.reputationPoints = 480; // Gold Citizen!
+      } else if (v.name === 'Yogesh Pandey' || (v.name && v.name.toLowerCase().includes('yogesh') && v.name.toLowerCase().includes('pandey'))) {
+        resObj.occupation = 'Priest / Pandit';
+        resObj.mobile = '8004695027';
+        resObj.reputationPoints = 200; // Silver Citizen
+      } else if (v.name === 'Gandhi Yadav' || (v.name && v.name.toLowerCase().includes('gandhi') && v.name.toLowerCase().includes('yadav'))) {
+        resObj.occupation = 'Dairy / Doodh Wale';
+        resObj.mobile = '9151103687';
+        resObj.reputationPoints = 150;
       }
 
       residentsToCreate.push(resObj);

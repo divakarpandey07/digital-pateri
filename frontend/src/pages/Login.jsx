@@ -11,6 +11,7 @@ function Login() {
   const [name, setName] = useState('');
   const [ward, setWard] = useState('');
   const [voterId, setVoterId] = useState('');
+  const [mobile, setMobile] = useState('');
 
   const { login, register, error, isLoading, language } = useStore();
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function Login() {
           : 'Please provide either Voter ID Card Number or Ward Number for profile verification.');
         return;
       }
-      const success = await register(name, email, password, ward, voterId);
+      const success = await register(name, email, password, ward, voterId, mobile);
       if (success) navigate('/');
     } else {
       const success = await login(email, password);
@@ -140,6 +141,23 @@ function Login() {
                   onChange={(e) => setWard(e.target.value)}
                   style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '0.85rem' }}
                 />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: '500', display: 'block', marginBottom: '4px' }}>
+                  {language === 'hi' ? 'मोबाइल नंबर (वैकल्पिक)' : language === 'hn' ? 'Mobile Number (Optional)' : 'Mobile Number (Optional)'}
+                </label>
+                <input 
+                  type="tel" 
+                  placeholder="E.g. 9876543210" 
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value)}
+                  maxLength={10}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '0.85rem' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '3px' }}>
+                  {language === 'hi' ? 'यह नंबर आपकी profile में save हो जाएगा' : language === 'hn' ? 'Yeh number aapki profile mein save ho jayega' : 'This will be saved to your resident profile'}
+                </span>
               </div>
 
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block', marginTop: '4px' }}>

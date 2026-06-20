@@ -38,7 +38,7 @@ const normalizeName = (name) => {
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, name, ward, voterId } = req.body;
+    const { email, password, name, ward, voterId, mobile } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({
@@ -123,8 +123,12 @@ exports.register = async (req, res, next) => {
       roles: ['Resident']
     });
 
-    // Link the resident profile to the user as well
+    // Link the resident profile to the user, and optionally update mobile
     resident.ownerId = user._id;
+    if (mobile && mobile.trim()) {
+      // Only update if resident doesn't already have a mobile number, or always override
+      resident.mobile = mobile.trim().replace(/^\+91\s?/, '').replace(/\s/g, '');
+    }
     await resident.save();
 
     // Generate token
