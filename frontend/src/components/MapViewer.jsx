@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useStore } from '../store/useStore';
 import { Map as MapIcon, Filter, Store, AlertTriangle, Hammer, Users, Home } from 'lucide-react';
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 function MapViewer() {
   const [mapMode, setMapMode] = useState('satellite'); // 'satellite' or 'street'

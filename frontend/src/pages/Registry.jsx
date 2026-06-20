@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useStore } from '../store/useStore';
 import { FilePlus, History, ShieldAlert, Award, FileText, CheckCircle, XCircle } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function Registry() {
   const { villageId, language, user } = useStore();
   const [activeTab, setActiveTab] = useState('apply');
@@ -25,7 +27,7 @@ function Registry() {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/v1/registry');
+      const res = await axios.get(`${API_BASE}/registry`);
       setRecords(res.data.data);
     } catch (err) {
       console.error(err);
@@ -50,7 +52,7 @@ function Registry() {
     setSubmitLoading(true);
     setMessage({ text: '', type: '' });
     try {
-      await axios.post('/api/v1/registry', {
+      await axios.post(`${API_BASE}/registry`, {
         villageId,
         type,
         name,
@@ -81,7 +83,7 @@ function Registry() {
 
   const handleAdminAction = async (recordId, status) => {
     try {
-      await axios.patch(`/api/v1/registry/${recordId}/status`, { status });
+      await axios.patch(`${API_BASE}/registry/${recordId}/status`, { status });
       fetchRecords();
     } catch (err) {
       console.error(err);

@@ -36,7 +36,7 @@ ChartJS.register(
   Filler
 );
 
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Detailed static 14 crops dataset for 100% offline crop knowledge library
 const CROP_DATA = [

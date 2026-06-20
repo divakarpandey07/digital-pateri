@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { User, ArrowRight, GitMerge, ShieldAlert } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function FamilyTree({ initialResidentId, onClose }) {
   const [currentId, setCurrentId] = useState(initialResidentId);
   const [resident, setResident] = useState(null);
@@ -12,7 +14,7 @@ function FamilyTree({ initialResidentId, onClose }) {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get(`/api/v1/residents/${id}`);
+      const res = await axios.get(`${API_BASE}/residents/${id}`);
       setResident(res.data.data);
     } catch (err) {
       console.error(err);

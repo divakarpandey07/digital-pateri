@@ -20,6 +20,8 @@ const CATEGORIES = [
   { id: 'Water Crisis', label: 'Water Contamination', icon: Droplet, color: '#06b6d4' }
 ];
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function SOS() {
   const { language } = useStore();
   const [selectedCategory, setSelectedCategory] = useState('Medical');
@@ -33,10 +35,10 @@ function SOS() {
     setStatusMsg('Acquiring high-accuracy GPS coordinates...');
     
     const fallbackLocation = { latitude: 25.0202, longitude: 83.5674 }; // Pateri Centroid
-
+ 
     const sendSosRequest = async (lat, lng) => {
       try {
-        const res = await axios.post('/api/v1/sos/trigger', {
+        const res = await axios.post(`${API_BASE}/sos/trigger`, {
           category: selectedCategory,
           latitude: lat,
           longitude: lng

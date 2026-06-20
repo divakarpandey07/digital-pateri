@@ -24,6 +24,8 @@ ChartJS.register(
   ArcElement
 );
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function Demographics() {
   const { villageId, language } = useStore();
   const [data, setData] = useState(null);
@@ -36,7 +38,7 @@ function Demographics() {
       setLoading(true);
       setError('');
       try {
-        const res = await axios.get(`/api/v1/villages/${villageId}/demographics`);
+        const res = await axios.get(`${API_BASE}/villages/${villageId}/demographics`);
         setData(res.data.data);
       } catch (err) {
         console.error(err);

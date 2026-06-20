@@ -5,6 +5,8 @@ import QRCard from '../components/QRCard';
 import { Search, UserCheck, Phone, MapPin, Award, X, Users, BookOpen } from 'lucide-react';
 import { translations } from '../utils/translations';
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function Directory() {
   const { villageId, language } = useStore();
   const [residents, setResidents] = useState([]);
@@ -30,7 +32,7 @@ function Directory() {
     setModalTab('card');
     setModalLoading(true);
     try {
-      const res = await axios.get(`/api/v1/residents/${resident._id}`);
+      const res = await axios.get(`${API_BASE}/residents/${resident._id}`);
       setFullResident(res.data.data);
     } catch (err) {
       console.error('Failed to fetch full resident details', err);
@@ -60,7 +62,7 @@ function Directory() {
       if (isBloodDonor) params.append('isBloodDonor', 'true');
       if (volunteerType) params.append('volunteerType', volunteerType);
 
-      const res = await axios.get(`/api/v1/residents?${params.toString()}`);
+      const res = await axios.get(`${API_BASE}/residents?${params.toString()}`);
       setResidents(res.data.data.records);
       setTotalPages(res.data.data.pagination.totalPages);
     } catch (err) {

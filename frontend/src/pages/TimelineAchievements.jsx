@@ -71,6 +71,8 @@ const memoriesImages = [
   }
 ];
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
+
 function TimelineAchievements() {
   const { villageId, language } = useStore();
   const [timeline, setTimeline] = useState([]);
@@ -86,8 +88,8 @@ function TimelineAchievements() {
       setError('');
       try {
         const [timeRes, achRes] = await Promise.all([
-          axios.get(`/api/v1/villages/${villageId}/timeline`),
-          axios.get(`/api/v1/villages/${villageId}/achievements`)
+          axios.get(`${API_BASE}/villages/${villageId}/timeline`),
+          axios.get(`${API_BASE}/villages/${villageId}/achievements`)
         ]);
         setTimeline(timeRes.data.data);
         setAchievements(achRes.data.data);
