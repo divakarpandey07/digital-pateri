@@ -234,7 +234,7 @@ function Admin() {
   const { 
     complaints, fetchComplaints, updateComplaintStatus, 
     createNotice, createJob, fetchVillageDetails, villageId,
-    language 
+    language, logout 
   } = useStore();
 
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'complaints' | 'shops' | 'publish'
@@ -372,6 +372,10 @@ function Admin() {
       setDashboardData(res.data.data);
     } catch (err) {
       console.error('Failed to fetch dashboard data', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.setItem('pateri_session_expired', 'true');
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -387,9 +391,13 @@ function Admin() {
         },
         headers: getAuthHeaders()
       });
-      setPendingBusinesses(res.data.data.records);
+      setPendingBusinesses(res.data?.data?.records || []);
     } catch (err) {
       console.error('Failed to fetch pending businesses', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.setItem('pateri_session_expired', 'true');
+        logout();
+      }
     }
   };
 
@@ -541,7 +549,7 @@ function Admin() {
             {t.tab_complaints}
           </button>
           <button onClick={() => setActiveTab('shops')} className="btn-secondary" style={{ background: activeTab === 'shops' ? 'var(--primary)' : 'var(--border)', color: activeTab === 'shops' ? 'white' : 'var(--text-dark)', padding: '6px 15px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {t.tab_shop_approval} ({pendingBusinesses.length})
+            {t.tab_shop_approval} ({(pendingBusinesses || []).length})
           </button>
           <button onClick={() => setActiveTab('publish')} className="btn-secondary" style={{ background: activeTab === 'publish' ? 'var(--primary)' : 'var(--border)', color: activeTab === 'publish' ? 'white' : 'var(--text-dark)', padding: '6px 15px', fontSize: '0.85rem' }}>
             {t.tab_publish}
@@ -668,7 +676,7 @@ function Admin() {
               </tr>
             </thead>
             <tbody>
-              {complaints.map(c => (
+              {(complaints || []).map(c => (
                 <tr key={c._id} style={{ borderBottom: '1px solid var(--border)' }}>
                   <td style={{ padding: '8px', fontWeight: 'bold' }}>{translateCategory(c.category)}</td>
                   <td style={{ padding: '8px' }}>{c.title}</td>
@@ -691,11 +699,11 @@ function Admin() {
       {activeTab === 'shops' && (
         <div className="card">
           <h3 style={{ marginBottom: '15px' }}>{t.pending_biz_title}</h3>
-          {pendingBusinesses.length === 0 ? (
+          {(pendingBusinesses || []).length === 0 ? (
             <p className="text-muted" style={{ padding: 'var(--spacing-md)' }}>{t.no_pending_biz}</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-              {pendingBusinesses.map((biz) => (
+              {(pendingBusinesses || []).map((biz) => (
                 <div key={biz._id} className="card" style={{ background: 'var(--bg-cream)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--spacing-md)' }}>
                   <div>
                     <h4 style={{ margin: '0 0 4px 0' }}>{biz.businessName}</h4>

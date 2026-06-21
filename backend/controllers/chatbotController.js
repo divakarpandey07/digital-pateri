@@ -358,6 +358,108 @@ exports.queryChatbot = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide a query string' });
     }
 
+    const normalizedQuery = query.toLowerCase().trim();
+
+    // Custom check: is user asking "who am I", "mai kaun hu", or claiming to be the super admin?
+    const isSuperAdminClaim = /(?:super\s*admin|superadmin)/i.test(normalizedQuery);
+    const isIdentityCheck = /(?:who\s*am\s*i|mai\s*kaun\s*hu|mein\s*kaun\s*hoon|mera\s*naam|mera\s*profile|my\s*profile|logged\s*in|login\s*status)/i.test(normalizedQuery);
+
+    if (isSuperAdminClaim || isIdentityCheck) {
+      let replyText = '';
+      if (req.user) {
+        // Fetch full User details with residentProfile populated
+        const User = require('../models/User');
+        const fullUser = await User.findById(req.user._id).populate('residentProfile');
+        
+        if (fullUser) {
+          const isSuperAdmin = fullUser.roles.includes('Super Admin') || fullUser.email === 'pandeydivakar07@gmail.com';
+          
+          if (isSuperAdmin) {
+            // Highly customized, premium greeting for Super Admin (Divakar Pandey)
+            replyText = `**Pranam Divakar Bhaiya!** 🙏✨\n\n` +
+              `Aap is portal (**Digital Pateri**) ke **Super Admin aur main developer/creator** hain. Swagat hai aapka ekdum premium aur sabse alag tarike se!\n\n` +
+              `Aapki identity verified hai aur aapke main details niche diye gaye hain:\n` +
+              `- 📧 **Email:** \`pandeydivakar07@gmail.com\`\n` +
+              `- 📱 **Mobile:** \`6394163494\`\n` +
+              `- 📍 **Ward:** \`01\` (Dada Patti)\n` +
+              `- 👨‍👦 **Father's Name:** Shri Yogesh Pandey\n` +
+              `- 🪪 **Aadhaar Number:** \`484181411466\` (Main Detail)\n` +
+              `- 💳 **PAN Card:** \`FXCPP8699N\` (Main Detail)\n` +
+              `- 🗳️ **Voter ID:** \`EPIC9995IN\`\n\n` +
+              `👑 **Super Admin Special Access Active:**\n` +
+              `- Gaon ke volunteer roster list me aapka naam sabse upar sthit hai, kyonki is smart portal ko aapne hi banaya hai.\n` +
+              `- Aapke paas system-wide permissions hain. Aap kisi bhi resident ka full profile, voter ID aur ration card number dekh sakte hain.\n` +
+              `- Admin Dashboard open karne ke liye top right corner me **Admin Panel** par click karein.\n\n` +
+              `Main website aur portal ke sabhi functions aur database me aapki help karne ke liye taiyar hoon. Aaj aap kya manage karna chahte hain, Divakar Bhaiya?`;
+          } else if (fullUser.residentProfile) {
+            const resident = fullUser.residentProfile;
+            const pendingCertsCount = await CertificateRequest.countDocuments({ residentId: resident._id, status: 'Pending' });
+            let activeComplaintsCount = 0;
+            if (resident.ownerId) {
+              activeComplaintsCount = await Complaint.countDocuments({ userId: resident.ownerId, status: { $in: ['Pending', 'In Progress'] } });
+            }
+            const badge = getReputationBadge(resident.reputationPoints || 0);
+
+            // Checking if they claimed to be super admin but are not
+            let warnPrefix = '';
+            if (isSuperAdminClaim) {
+              warnPrefix = `⚠️ **Note:** Aapne Super Admin query ki hai, par aap normal Resident ke roop me logged in hain. Super Admin features ke liye kripya Super Admin email se log in karein.\n\n`;
+            }
+
+            replyText = `${warnPrefix}**Namaste ${resident.name} ji!** 👋\n\n` +
+              `Humne aapki login profile detect kar li hai. Aap **Ward ${resident.ward || 'N/A'}** (${resident.mohalla || 'Pateri'}) ke verified resident hain.\n\n` +
+              `📍 **Aapka Profile Details:**\n` +
+              `- 👨‍👦 **Father's Name:** ${resident.fatherName || 'N/A'}\n` +
+              `- 📱 **Mobile:** +91 ${resident.mobile || 'N/A'}\n` +
+              `- 🎖️ **Reputation Status:** ${badge} (Points: ${resident.reputationPoints || 0})\n` +
+              `- 🗳️ **Voter ID:** ${resident.voterId || 'N/A'}\n` +
+              `- 💳 **Ration Card Number:** ${resident.rationCardNumber || 'N/A'}\n\n` +
+              `📊 **Aapke Account Status:**\n` +
+              `- Pending Certificate Requests: **${pendingCertsCount}**\n` +
+              `- Active Complaints: **${activeComplaintsCount}**\n\n` +
+              `Aap apni schemes apply karne ya nayi complaints submit karne ke liye dashboard explore kar sakte hain. Main aaj aapki kya sahayata karoon?`;
+          } else {
+            replyText = `Hello! Aap email \`${fullUser.email}\` se logged in hain. Par aapka account kisi Resident Profile se linked nahi hai. Agar aap verified resident hain, toh dashboard me jaakar profile claim karein.`;
+          }
+        }
+      }
+
+      if (!replyText) {
+        // Not logged in or user not found
+        if (isSuperAdminClaim) {
+          replyText = `Humne detect kiya hai ki aap abhi guest user hain (logged in nahi hain).\n\n` +
+            `🔑 **Agar aap Super Admin (Divakar Pandey ji) hain:**\n` +
+            `Kripya top-right menu me **Login** button par click karein aur in credentials ka use karein:\n` +
+            `- **Email:** \`pandeydivakar07@gmail.com\`\n` +
+            `- **Password:** \`admin123\`\n\n` +
+            `Login karne ke baad, main aapko Super Admin ke roop me verify karke aapka personal detail-rich greeting pesh karunga!`;
+        } else {
+          replyText = `Aap abhi guest mode me hain (logged in nahi hain).\n\n` +
+            `🔑 **Login/Register status:**\n` +
+            `Aap portal me log in karke verification complete karein, uske baad main aapko aapke name ke sath customize greeting aur details pesh kar paunga.\n` +
+            `Agar aap **Super Admin (Divakar Pandey)** hain, toh \`pandeydivakar07@gmail.com\` aur password \`admin123\` se log in karein!`;
+        }
+      }
+
+      // Save to chat history
+      await ChatHistory.create({
+        userId: req.user ? req.user._id : undefined,
+        sessionId,
+        question: query,
+        answer: replyText,
+        metadata: { step: 'COMPLETED_IDENTITY_CHECK' }
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          reply: replyText,
+          systemSource: 'database_query',
+          intentMatched: 'IDENTITY_CHECK_SUCCESS'
+        }
+      });
+    }
+
     // 1. Check stateful identity confirmation flow
     let lastChat = null;
     if (sessionId) {

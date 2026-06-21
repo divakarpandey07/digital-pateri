@@ -12,6 +12,13 @@ function Login() {
   const [ward, setWard] = useState('');
   const [voterId, setVoterId] = useState('');
   const [mobile, setMobile] = useState('');
+  const [sessionExpired, setSessionExpired] = useState(() => {
+    const expired = localStorage.getItem('pateri_session_expired') === 'true';
+    if (expired) {
+      localStorage.removeItem('pateri_session_expired');
+    }
+    return expired;
+  });
 
   const { login, register, error, isLoading, language } = useStore();
   const navigate = useNavigate();
@@ -59,9 +66,9 @@ function Login() {
           </p>
         </div>
 
-        {error && (
+        {(sessionExpired || error) && (
           <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#dc2626', fontSize: '0.8rem', padding: '10px', borderRadius: '6px', marginBottom: '15px', textAlign: 'center' }}>
-            {error}
+            {sessionExpired ? (language === 'hi' ? 'सत्र समाप्त हो गया है या अमान्य है। कृपया नए क्रेडेंशियल्स के साथ फिर से लॉगिन करें।' : language === 'hn' ? 'Session expire ho gaya hai ya invalid hai. Kripya naye credentials se fir se login karein.' : 'Session has expired or is invalid. Please log in again with new credentials.') : error}
           </div>
         )}
 
