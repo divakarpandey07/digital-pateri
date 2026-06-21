@@ -427,14 +427,19 @@ function Dashboard() {
     return <div className="container" style={{ padding: 'var(--spacing-xl) 0', textAlign: 'center' }}>Loading profile metrics...</div>;
   }
 
-  const { profile, familyMembers, activities } = residentProfile;
+  const profile = residentProfile?.profile || {};
+  const familyMembers = residentProfile?.familyMembers || [];
+  const activities = residentProfile?.activities || {};
+  const certificatesList = activities?.certificates || [];
+  const complaintsList = activities?.complaints || [];
+  const volunteerList = activities?.volunteer || [];
 
   // Generate QR Code URL linking to Public Profile Scan landing page
-  const publicUrl = `${window.location.origin}/#/resident/${profile.residentId}`;
+  const publicUrl = `${window.location.origin}/#/resident/${profile?.residentId || ''}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=047857&data=${encodeURIComponent(publicUrl)}`;
 
   // Translation helpers for Gender symbols
-  const genderSymbol = profile.gender === 'Male' ? '♂' : profile.gender === 'Female' ? '♀' : '⚦';
+  const genderSymbol = profile?.gender === 'Male' ? '♂' : profile?.gender === 'Female' ? '♀' : '⚦';
 
   return (
     <div className="container animate-fade-in" style={{ padding: 'var(--spacing-lg) 0' }}>
@@ -539,8 +544,8 @@ function Dashboard() {
               
               {/* Dynamically Styled Badges on Card */}
               <div style={{ display: 'flex', gap: '4px' }}>
-                {profile.verificationStatus && <span style={{ background: '#10b981', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.6rem' }}>VERIFIED</span>}
-                {activities.isVolunteer && <span style={{ background: '#3b82f6', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.6rem' }}>VOLUNTEER</span>}
+                {profile?.verificationStatus && <span style={{ background: '#10b981', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.6rem' }}>VERIFIED</span>}
+                {activities?.isVolunteer && <span style={{ background: '#3b82f6', color: 'white', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.6rem' }}>VOLUNTEER</span>}
               </div>
             </div>
           </div>
@@ -723,7 +728,7 @@ function Dashboard() {
 
             {/* List of Issued Certificate Tickets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {activities.certificates.map((cert, index) => (
+              {certificatesList.map((cert, index) => (
                 <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', borderBottom: '1px solid var(--border)' }}>
                   <div>
                     <span style={{ fontWeight: '600', fontSize: '0.85rem' }}>{cert.type} Certificate</span>
@@ -751,7 +756,7 @@ function Dashboard() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {/* Complaints submitted */}
-              {activities.complaints.map((comp) => (
+              {complaintsList.map((comp) => (
                 <div key={comp._id} style={{ display: 'flex', gap: '10px', padding: '8px', background: 'var(--bg-cream)', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
                   <Clock size={16} color="var(--secondary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div style={{ flex: 1 }}>
@@ -764,7 +769,7 @@ function Dashboard() {
               ))}
 
               {/* Volunteer actions */}
-              {activities.volunteer.map((vol) => (
+              {volunteerList.map((vol) => (
                 <div key={vol._id} style={{ display: 'flex', gap: '10px', padding: '8px', background: 'var(--bg-cream)', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
                   <CheckCircle size={16} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div style={{ flex: 1 }}>
@@ -776,7 +781,7 @@ function Dashboard() {
                 </div>
               ))}
 
-              {activities.complaints.length === 0 && activities.volunteer.length === 0 && (
+              {complaintsList.length === 0 && volunteerList.length === 0 && (
                 <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>No recent activity logged in the system.</p>
               )}
             </div>

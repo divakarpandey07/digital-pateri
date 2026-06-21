@@ -286,7 +286,7 @@ export const useStore = create((set, get) => ({
       set({ 
         token,
         user, 
-        residentProfile: user.residentProfile,
+        residentProfile: null, 
         welcomeMessage,
         isLoading: false 
       });
@@ -306,6 +306,10 @@ export const useStore = create((set, get) => ({
       return res.data.data;
     } catch (err) {
       set({ isLoading: false });
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.setItem('pateri_session_expired', 'true');
+        get().logout();
+      }
       return null;
     }
   },
