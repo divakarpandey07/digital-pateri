@@ -18,20 +18,24 @@ const Scheme = require('../models/Scheme');
 const Crop = require('../models/Crop');
 const RegistryRecord = require('../models/RegistryRecord');
 const { seedDatabase } = require('../scripts/seed');
+const { importRationData } = require('../scripts/import_ration_data');
 
 // @desc    Trigger Database Seeding
 // @route   POST /api/v1/admin/seed
 // @access  Private (Panchayat Admin / Super Admin)
+// exports.triggerSeed = async (req, res, next) => {
 exports.triggerSeed = async (req, res, next) => {
   try {
     console.log('Seeding triggered via Admin Controller API...');
     await seedDatabase();
+    console.log('Importing ration card data via Admin Controller API...');
+    await importRationData();
     res.status(200).json({
       success: true,
-      message: 'Database seeded successfully with all Pateri real voters and assets!'
+      message: 'Database seeded and ration cards imported successfully!'
     });
   } catch (error) {
-    console.error('Database seeding failed via API:', error);
+    console.error('Database seeding/import failed via API:', error);
     res.status(500).json({
       success: false,
       message: 'Database seeding failed: ' + error.message

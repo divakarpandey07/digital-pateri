@@ -152,7 +152,7 @@ const importRationData = async () => {
             photo: '',
             isPublicProfile: true,
             relations: [],
-            verificationStatus: true,
+            verificationStatus: 'verified',
             rationCardNumber: rationCardNumber,
             cardType: cardType,
             fpsDealer: fpsDealer
@@ -265,11 +265,22 @@ const importRationData = async () => {
     console.log(`- New resident profiles created: ${createdCount}`);
     
     console.log('Finished successfully.');
-    process.exit(0);
   } catch (err) {
     console.error('Import failed:', err);
-    process.exit(1);
+    throw err;
   }
 };
 
-importRationData();
+module.exports = { importRationData };
+
+if (require.main === module) {
+  importRationData()
+    .then(() => {
+      console.log('Ration data import finished.');
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error('Ration data import failed:', err);
+      process.exit(1);
+    });
+}
