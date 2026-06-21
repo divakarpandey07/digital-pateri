@@ -678,6 +678,46 @@ exports.queryChatbot = async (req, res, next) => {
       }
 
       case 'GENERAL_GREETING': {
+        if (req.user) {
+          const User = require('../models/User');
+          const fullUser = await User.findById(req.user._id).populate('residentProfile');
+          
+          if (fullUser) {
+            const isSuperAdmin = fullUser.roles.includes('Super Admin') || fullUser.email === 'pandeydivakar07@gmail.com';
+            
+            if (isSuperAdmin) {
+              reply = `**Pranam Divakar Bhaiya!** 🙏✨\n\n` +
+                `Digital Pateri AI Assistant me aapka swagat hai. Aap logged in hain as **Super Admin**.\n\n` +
+                `📍 **Quick Stats & Controls:**\n` +
+                `- **Mobile:** \`6394163494\` | **Ward:** \`01\` (Dada Patti)\n` +
+                `- Aap active volunteer list me **sabse upar** sthit hain.\n` +
+                `- Admin Dashboard open karne ke liye top right corner me **Admin Panel** link ka upyog karein.\n\n` +
+                `Main website ke sabhi modules me aapki help karne ke liye ready hoon. Aaj aap kya check ya change karna chahte hain?`;
+            } else if (fullUser.residentProfile) {
+              const resident = fullUser.residentProfile;
+              const pendingCertsCount = await CertificateRequest.countDocuments({ residentId: resident._id, status: 'Pending' });
+              let activeComplaintsCount = 0;
+              if (resident.ownerId) {
+                activeComplaintsCount = await Complaint.countDocuments({ userId: resident.ownerId, status: { $in: ['Pending', 'In Progress'] } });
+              }
+              const badge = getReputationBadge(resident.reputationPoints || 0);
+
+              reply = `**Namaste ${resident.name} ji!** 👋\n\n` +
+                `Digital Pateri AI Assistant me aapka swagat hai. Aap log in hain aur aapka profile verified hai:\n\n` +
+                `- 📍 **Ward:** ${resident.ward || 'N/A'} (Dada Patti / Mohalla)\n` +
+                `- 🎖️ **Reputation:** ${badge}\n` +
+                `- 📊 **Active Complaints:** **${activeComplaintsCount}** | Pending Certificates: **${pendingCertsCount}**\n\n` +
+                `Main aapki crops (kheti-baari), mandi rates, schemes, notices ya details search karne me sahayata kar sakta hoon. Kahiye, aaj main aapki kya sahayata karoon?`;
+            } else {
+              reply = `**Namaste!** 👋\n\n` +
+                `Digital Pateri AI Assistant me aapka swagat hai. Aap email \`${fullUser.email}\` se logged in hain.\n\n` +
+                `⚠️ *Aapka profile abhi certified/verified nahi hai.* Kripya dashboard me OTP aur Aadhaar details daalkar verification complete karein, taaki hum aapko name se call kar sakein!\n\n` +
+                `Main aaj aapki kya help kar sakta hoon?`;
+            }
+            break;
+          }
+        }
+
         reply = `Namaskar! 🙏 Digital Pateri AI Assistant me aapka swagat hai.\n\n` +
           `Main is portal par aapki sahayata ke liye active hoon. Main ye sab kar sakta hoon:\n` +
           `1. **Resident Identity Verification:** Apna verified profile aur details dekhne ke liye batayein *"Hello, I am [Apna Name]"* (Jaise: *Hello, I am Rajesh Kumar*).\n` +
