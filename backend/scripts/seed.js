@@ -231,7 +231,8 @@ const seedDatabase = async () => {
       // Determine mohalla based on ward
       const w = parseInt(calculatedWard, 10);
       let mohalla = 'Pateri Central';
-      if (w === 1 || w === 5 || w === 9 || w === 13) mohalla = 'Dalit Basti';
+      if (w === 1) mohalla = 'Dada Patti';
+      else if (w === 5 || w === 9 || w === 13) mohalla = 'Dalit Basti';
       else if (w === 2 || w === 6 || w === 10 || w === 14) mohalla = 'Pipra Tola';
       else if (w === 3 || w === 7 || w === 11) mohalla = 'Market Area';
       else if (w === 4 || w === 8 || w === 12) mohalla = 'Purab Tola';

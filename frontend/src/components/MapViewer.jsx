@@ -31,6 +31,7 @@ function MapViewer() {
   const mohallaCoordinates = {
     'Purab Tola': [25.0215, 83.5691],
     'Dalit Basti': [25.0201, 83.5672],
+    'Dada Patti': [25.0203, 83.5675],
     'Market Area': [25.0210, 83.5684],
     'Pipra Tola': [25.0225, 83.5681]
   };

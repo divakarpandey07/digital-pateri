@@ -190,7 +190,8 @@ const importRationData = async () => {
         const wardStr = String(wardNum).padStart(2, '0');
         
         let mohalla = 'Pateri Central';
-        if (wardNum === 1 || wardNum === 5 || wardNum === 9 || wardNum === 13) mohalla = 'Dalit Basti';
+        if (wardNum === 1) mohalla = 'Dada Patti';
+        else if (wardNum === 5 || wardNum === 9 || wardNum === 13) mohalla = 'Dalit Basti';
         else if (wardNum === 2 || wardNum === 6 || wardNum === 10 || wardNum === 14) mohalla = 'Pipra Tola';
         else if (wardNum === 3 || wardNum === 7 || wardNum === 11) mohalla = 'Market Area';
         else if (wardNum === 4 || wardNum === 8 || wardNum === 12) mohalla = 'Purab Tola';

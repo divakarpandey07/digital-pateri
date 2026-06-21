@@ -35,7 +35,7 @@ const FieldRow = ({ label, value, icon: Icon }) => (
 function SearchResident() {
   const { villageId, language, user } = useStore();
   const [residents, setResidents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [ward, setWard] = useState('');
   const [houseNo, setHouseNo] = useState('');
@@ -218,7 +218,7 @@ function SearchResident() {
               <select value={ward} onChange={e => setWard(e.target.value)}
                 style={{ width: '100%', padding: '9px', border: '1.5px solid var(--border)', borderRadius: '8px', fontSize: '0.88rem', background: 'white' }}>
                 <option value="">All Wards</option>
-                {['01','02','03','04','05'].map(w => <option key={w} value={w}>Ward {w}</option>)}
+                {['01','02','03','04','05','06','07','08','09','10','11','12','13','14'].map(w => <option key={w} value={w}>Ward {w}</option>)}
               </select>
             </div>
           </div>

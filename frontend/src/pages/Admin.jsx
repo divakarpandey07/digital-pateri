@@ -462,13 +462,13 @@ function Admin() {
   // CHART DATA COMPILATION
   const getComplaintsCategoryChartData = () => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    const chartSrc = dashboardData.complaints.complaintsByCategory;
+    const chartSrc = dashboardData.complaints?.complaintsByCategory || [];
     return {
-      labels: chartSrc.map(d => translateCategory(d.name)),
+      labels: chartSrc.map(d => translateCategory(d?.name)),
       datasets: [
         {
           label: language === 'hi' ? 'शिकायतें' : language === 'hn' ? 'Complaints' : 'Complaints',
-          data: chartSrc.map(d => d.value),
+          data: chartSrc.map(d => d?.value || 0),
           backgroundColor: '#047857',
           borderRadius: 6
         }
@@ -478,12 +478,12 @@ function Admin() {
 
   const getComplaintsStatusChartData = () => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    const chartSrc = dashboardData.complaints.complaintsByStatus;
+    const chartSrc = dashboardData.complaints?.complaintsByStatus || [];
     return {
-      labels: chartSrc.map(d => translateStatus(d.name)),
+      labels: chartSrc.map(d => translateStatus(d?.name)),
       datasets: [
         {
-          data: chartSrc.map(d => d.value),
+          data: chartSrc.map(d => d?.value || 0),
           backgroundColor: ['#ca8a04', '#3b82f6', '#16a34a']
         }
       ]
@@ -492,13 +492,13 @@ function Admin() {
 
   const getBusinessCategoryChartData = () => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    const chartSrc = dashboardData.demographics.businessesByCategory;
+    const chartSrc = dashboardData.demographics?.businessesByCategory || [];
     return {
-      labels: chartSrc.map(d => translateCategory(d.name)),
+      labels: chartSrc.map(d => translateCategory(d?.name)),
       datasets: [
         {
           label: language === 'hi' ? 'व्यवसाय' : language === 'hn' ? 'Businesses' : 'Businesses',
-          data: chartSrc.map(d => d.value),
+          data: chartSrc.map(d => d?.value || 0),
           backgroundColor: '#d97706',
           borderRadius: 6
         }
@@ -508,12 +508,12 @@ function Admin() {
 
   const getVolunteerCategoryChartData = () => {
     if (!dashboardData) return { labels: [], datasets: [] };
-    const chartSrc = dashboardData.demographics.volunteersByCategory;
+    const chartSrc = dashboardData.demographics?.volunteersByCategory || [];
     return {
-      labels: chartSrc.map(d => translateCategory(d.name)),
+      labels: chartSrc.map(d => translateCategory(d?.name)),
       datasets: [
         {
-          data: chartSrc.map(d => d.value),
+          data: chartSrc.map(d => d?.value || 0),
           backgroundColor: ['#3b82f6', '#ec4899', '#ef4444', '#dc2626', '#10b981']
         }
       ]
@@ -627,7 +627,7 @@ function Admin() {
               <div className="card">
                 <h3 style={{ marginBottom: '12px' }}>{t.recent_complaints}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {dashboardData.complaints.recent.map(comp => (
+                  {(dashboardData.complaints?.recent || []).map(comp => (
                     <div key={comp._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid var(--border)' }}>
                       <span>{comp.title}</span>
                       <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>{translateStatus(comp.status)}</span>
@@ -639,7 +639,7 @@ function Admin() {
               <div className="card">
                 <h3 style={{ marginBottom: '12px' }}>{t.recent_volunteer}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {dashboardData.complaints.recentVolunteerRequests.map(req => (
+                  {(dashboardData.complaints?.recentVolunteerRequests || []).map(req => (
                     <div key={req._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid var(--border)' }}>
                       <span>{req.title}</span>
                       <span style={{ fontSize: '0.8rem', color: 'var(--danger)', fontWeight: 'bold' }}>{translatePriority(req.priority)}</span>

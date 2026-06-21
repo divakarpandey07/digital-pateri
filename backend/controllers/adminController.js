@@ -48,71 +48,77 @@ exports.triggerSeed = async (req, res, next) => {
 // @access  Private (Panchayat Admin / Super Admin)
 exports.getDashboardStats = async (req, res, next) => {
   try {
-    // 1. Core KPIs
-    const totalResidents = await Resident.countDocuments({ isDeleted: false });
-    const totalComplaints = await Complaint.countDocuments({ isDeleted: false });
-    const resolvedComplaints = await Complaint.countDocuments({ status: 'Resolved', isDeleted: false });
-    const totalBusinesses = await Business.countDocuments();
-    const verifiedBusinesses = await Business.countDocuments({ verificationStatus: 'Verified' });
-    const totalVolunteers = await Volunteer.countDocuments({ isActive: true });
-    const totalBloodDonors = await BloodDonor.countDocuments({ availabilityStatus: true });
-
-    // 2. Complaint Categories Distribution (for Recharts)
-    const complaintCategories = await Complaint.aggregate([
-      { $match: { isDeleted: false } },
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $project: { name: '$_id', value: '$count', _id: 0 } }
+    // Run all aggregation and count queries in parallel using Promise.all
+    const [
+      totalResidents,
+      totalComplaints,
+      resolvedComplaints,
+      totalBusinesses,
+      verifiedBusinesses,
+      totalVolunteers,
+      totalBloodDonors,
+      complaintCategories,
+      complaintStatus,
+      businessCategories,
+      volunteerCategories,
+      totalDocuments,
+      documentDownloadsAgg,
+      documentCategories,
+      recentComplaintsList,
+      recentVolunteerRequests
+    ] = await Promise.all([
+      Resident.countDocuments({ isDeleted: false }),
+      Complaint.countDocuments({ isDeleted: false }),
+      Complaint.countDocuments({ status: 'Resolved', isDeleted: false }),
+      Business.countDocuments(),
+      Business.countDocuments({ verificationStatus: 'Verified' }),
+      Volunteer.countDocuments({ isActive: true }),
+      BloodDonor.countDocuments({ availabilityStatus: true }),
+      Complaint.aggregate([
+        { $match: { isDeleted: false } },
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $project: { name: '$_id', value: '$count', _id: 0 } }
+      ]),
+      Complaint.aggregate([
+        { $match: { isDeleted: false } },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+        { $project: { name: '$_id', value: '$count', _id: 0 } }
+      ]),
+      Business.aggregate([
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $project: { name: '$_id', value: '$count', _id: 0 } }
+      ]),
+      Volunteer.aggregate([
+        { $match: { isActive: true } },
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $project: { name: '$_id', value: '$count', _id: 0 } }
+      ]),
+      Document.countDocuments(),
+      Document.aggregate([
+        { $group: { _id: null, totalDownloads: { $sum: '$downloadCount' } } }
+      ]),
+      Document.aggregate([
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $project: { name: '$_id', value: '$count', _id: 0 } }
+      ]),
+      Complaint.find({ isDeleted: false })
+        .sort('-createdAt')
+        .limit(5)
+        .populate('userId', 'email'),
+      VolunteerRequest.find()
+        .sort('-createdAt')
+        .limit(5)
+        .populate({
+          path: 'requestedBy',
+          select: 'email residentProfile',
+          populate: {
+            path: 'residentProfile',
+            select: 'name'
+          }
+        })
     ]);
 
-    // 3. Complaint Status Distribution
-    const complaintStatus = await Complaint.aggregate([
-      { $match: { isDeleted: false } },
-      { $group: { _id: '$status', count: { $sum: 1 } } },
-      { $project: { name: '$_id', value: '$count', _id: 0 } }
-    ]);
-
-    // 4. Business Categories Distribution
-    const businessCategories = await Business.aggregate([
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $project: { name: '$_id', value: '$count', _id: 0 } }
-    ]);
-
-    // 5. Volunteer Categories Distribution
-    const volunteerCategories = await Volunteer.aggregate([
-      { $match: { isActive: true } },
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $project: { name: '$_id', value: '$count', _id: 0 } }
-    ]);
-
-    // 6. Documents Stats
-    const totalDocuments = await Document.countDocuments();
-    const documentDownloadsAgg = await Document.aggregate([
-      { $group: { _id: null, totalDownloads: { $sum: '$downloadCount' } } }
-    ]);
     const totalDownloads = documentDownloadsAgg.length > 0 ? documentDownloadsAgg[0].totalDownloads : 0;
-
-    const documentCategories = await Document.aggregate([
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $project: { name: '$_id', value: '$count', _id: 0 } }
-    ]);
-
-    // 7. Recent Complaints & Volunteer Requests
-    const recentComplaintsList = await Complaint.find({ isDeleted: false })
-      .sort('-createdAt')
-      .limit(5)
-      .populate('userId', 'email');
-
-    const recentVolunteerRequests = await VolunteerRequest.find()
-      .sort('-createdAt')
-      .limit(5)
-      .populate({
-        path: 'requestedBy',
-        select: 'email residentProfile',
-        populate: {
-          path: 'residentProfile',
-          select: 'name'
-        }
-      });
 
     res.status(200).json({
       success: true,
@@ -129,15 +135,15 @@ exports.getDashboardStats = async (req, res, next) => {
           totalDownloads
         },
         demographics: {
-          businessesByCategory: businessCategories,
-          volunteersByCategory: volunteerCategories,
-          documentsByCategory: documentCategories
+          businessesByCategory: businessCategories || [],
+          volunteersByCategory: volunteerCategories || [],
+          documentsByCategory: documentCategories || []
         },
         complaints: {
-          complaintsByCategory: complaintCategories,
-          complaintsByStatus: complaintStatus,
-          recent: recentComplaintsList,
-          recentVolunteerRequests: recentVolunteerRequests
+          complaintsByCategory: complaintCategories || [],
+          complaintsByStatus: complaintStatus || [],
+          recent: recentComplaintsList || [],
+          recentVolunteerRequests: recentVolunteerRequests || []
         }
       }
     });

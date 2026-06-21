@@ -140,6 +140,7 @@ function Complaints() {
                     <option value="Purab Tola">Purab Tola</option>
                     <option value="Pipra Tola">Pipra Tola</option>
                     <option value="Dalit Basti">Dalit Basti</option>
+                    <option value="Dada Patti">Dada Patti</option>
                     <option value="Market Area">Market Area</option>
                   </select>
                 </div>

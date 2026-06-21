@@ -43,8 +43,12 @@ exports.getVillageDetails = async (req, res, next) => {
   try {
     const villageId = req.params.id;
 
-    // Find village
-    const village = await Village.findById(villageId);
+    // Find village and config in parallel
+    const [village, config] = await Promise.all([
+      Village.findById(villageId),
+      SiteConfig.findOne({ villageId })
+    ]);
+
     if (!village || !village.isActive) {
       return res.status(404).json({
         success: false,
@@ -53,35 +57,37 @@ exports.getVillageDetails = async (req, res, next) => {
       });
     }
 
-    // Find config
-    const config = await SiteConfig.findOne({ villageId });
+    // Calculate real-time KPI numbers in parallel
+    const [
+      totalResidents,
+      totalFamiliesRaw,
+      activeComplaints,
+      totalDonors,
+      totalJobs
+    ] = await Promise.all([
+      Resident.countDocuments({ villageId, isDeleted: false, verificationStatus: 'verified' }),
+      Resident.countDocuments({ 
+        villageId, 
+        isDeleted: false, 
+        relations: { $elemMatch: { relationType: 'Child' } } 
+      }),
+      Complaint.countDocuments({ 
+        villageId, 
+        status: { $in: ['Pending', 'In Progress'] }, 
+        isDeleted: false 
+      }),
+      BloodDonor.countDocuments({ 
+        villageId, 
+        availabilityStatus: true, 
+        isDeleted: false 
+      }),
+      Job.countDocuments({ 
+        villageId, 
+        isDeleted: false 
+      })
+    ]);
 
-    // Calculate real-time KPI numbers for dashboard
-    const totalResidents = await Resident.countDocuments({ villageId, isDeleted: false, verificationStatus: true });
-    
-    // Families count (using unique fatherNames or approximate head count)
-    const totalFamilies = await Resident.countDocuments({ 
-      villageId, 
-      isDeleted: false, 
-      relations: { $elemMatch: { relationType: 'Child' } } 
-    }) + 1; // Seed fallback approximation
-
-    const activeComplaints = await Complaint.countDocuments({ 
-      villageId, 
-      status: { $in: ['Pending', 'In Progress'] }, 
-      isDeleted: false 
-    });
-
-    const totalDonors = await BloodDonor.countDocuments({ 
-      villageId, 
-      availabilityStatus: true, 
-      isDeleted: false 
-    });
-
-    const totalJobs = await Job.countDocuments({ 
-      villageId, 
-      isDeleted: false 
-    });
+    const totalFamilies = totalFamiliesRaw + 1; // Seed fallback approximation
 
     res.status(200).json({
       success: true,

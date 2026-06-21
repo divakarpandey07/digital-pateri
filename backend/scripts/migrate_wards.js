@@ -60,6 +60,8 @@ const runMigration = async () => {
     let matchedCount = 0;
     let unmatchedCount = 0;
 
+    const bulkOps = [];
+
     for (const r of residents) {
       let ward = '01';
       let hNum = 1;
@@ -149,26 +151,41 @@ const runMigration = async () => {
       // Determine mohalla based on ward
       const w = parseInt(ward, 10);
       let mohalla = 'Pateri Central';
-      if (w === 1 || w === 5 || w === 9 || w === 13) mohalla = 'Dalit Basti';
+      if (w === 1) mohalla = 'Dada Patti';
+      else if (w === 5 || w === 9 || w === 13) mohalla = 'Dalit Basti';
       else if (w === 2 || w === 6 || w === 10 || w === 14) mohalla = 'Pipra Tola';
       else if (w === 3 || w === 7 || w === 11) mohalla = 'Market Area';
       else if (w === 4 || w === 8 || w === 12) mohalla = 'Purab Tola';
 
-      // Update resident fields
-      r.ward = ward;
-      r.houseNo = `W${ward}-H${hNum}`;
-      r.mohalla = mohalla;
-      r.address = `House No. ${hNum}, Ward No. ${ward}, Mohalla ${mohalla}, Pateri`;
-      
       // Fix verification status schema mismatch (convert boolean to string if any exists)
-      if (r.verificationStatus === true || r.verificationStatus === 'true') {
-        r.verificationStatus = 'verified';
-      } else if (r.verificationStatus === false || r.verificationStatus === 'false') {
-        r.verificationStatus = 'unverified';
+      let verificationStatus = r.verificationStatus;
+      if (verificationStatus === true || verificationStatus === 'true') {
+        verificationStatus = 'verified';
+      } else if (verificationStatus === false || verificationStatus === 'false') {
+        verificationStatus = 'unverified';
       }
 
-      await r.save();
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: r._id },
+          update: {
+            $set: {
+              ward,
+              houseNo: `W${ward}-H${hNum}`,
+              mohalla,
+              address: `House No. ${hNum}, Ward No. ${ward}, Mohalla ${mohalla}, Pateri`,
+              verificationStatus
+            }
+          }
+        }
+      });
       updatedCount++;
+    }
+
+    if (bulkOps.length > 0) {
+      console.log(`Executing bulkWrite of ${bulkOps.length} updates...`);
+      await Resident.bulkWrite(bulkOps);
+      console.log('bulkWrite complete.');
     }
 
     console.log('\nMigration Summary:');

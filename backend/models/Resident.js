@@ -172,4 +172,10 @@ const ResidentSchema = new mongoose.Schema({
 // Create text index for global search
 ResidentSchema.index({ name: 'text', mohalla: 'text', occupation: 'text' });
 
+// Single-field indexes for fast directory query and lookup performance
+ResidentSchema.index({ name: 1 });
+ResidentSchema.index({ residentId: 1 });
+ResidentSchema.index({ ward: 1 });
+ResidentSchema.index({ houseNo: 1 });
+
 module.exports = mongoose.model('Resident', ResidentSchema);
