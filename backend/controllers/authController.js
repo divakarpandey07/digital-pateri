@@ -134,15 +134,18 @@ exports.register = async (req, res, next) => {
     // Generate token
     const token = signToken(user._id);
 
+    const welcomeMessage = `नमस्ते, ${resident.name}! डिजिटल पटेरी स्मार्ट विलेज पोर्टल पर आपका हार्दिक स्वागत है। 🌟\nगाँव के विकास, योजनाओं और सुविधाओं से जुड़ने के लिए धन्यवाद। आइये मिलकर पटेरी को एक आदर्श और डिजिटल गाँव बनायें।`;
+
     res.status(201).json({
       success: true,
+      welcomeMessage,
       data: {
         token,
         user: {
           id: user._id,
           email: user.email,
           roles: user.roles,
-          residentProfile: user.residentProfile
+          residentProfile: resident
         }
       }
     });
@@ -189,8 +192,12 @@ exports.login = async (req, res, next) => {
     // Generate token
     const token = signToken(user._id);
 
+    const name = user.residentProfile ? user.residentProfile.name : 'Citizen';
+    const welcomeMessage = `नमस्ते, ${name}! डिजिटल पटेरी स्मार्ट विलेज पोर्टल पर आपका हार्दिक स्वागत है। 🌟\nगाँव के विकास, योजनाओं और सुविधाओं से जुड़ने के लिए धन्यवाद। आइये मिलकर पटेरी को एक आदर्श और डिजिटल गाँव बनायें।`;
+
     res.status(200).json({
       success: true,
+      welcomeMessage,
       data: {
         token,
         user: {
@@ -327,9 +334,13 @@ exports.verifyOtp = async (req, res, next) => {
     // Sign token
     const token = signToken(user._id);
 
+    const name = resident ? resident.name : 'Citizen';
+    const welcomeMessage = `नमस्ते, ${name}! डिजिटल पटेरी स्मार्ट विलेज पोर्टल पर आपका हार्दिक स्वागत है। 🌟\nगाँव के विकास, योजनाओं और सुविधाओं से जुड़ने के लिए धन्यवाद। आइये मिलकर पटेरी को एक आदर्श और डिजिटल गाँव बनायें।`;
+
     res.status(200).json({
       success: true,
       message: 'Logged in successfully',
+      welcomeMessage,
       data: {
         token,
         user: {

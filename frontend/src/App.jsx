@@ -34,7 +34,7 @@ import SOS from './pages/SOS';
 import DigitalArchive from './pages/DigitalArchive';
 
 function App() {
-  const { user, fetchVillageId, fetchVillageDetails, villageId } = useStore();
+  const { user, fetchVillageId, fetchVillageDetails, villageId, welcomeMessage, clearWelcomeMessage } = useStore();
 
   useEffect(() => {
     // Load default village details on startup (Pateri ID: PAT-821106)
@@ -93,6 +93,63 @@ function App() {
         {/* Global Footer */}
         <Footer />
       </div>
+
+      {welcomeMessage && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.95))',
+            border: '1px solid rgba(4, 120, 87, 0.2)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            borderRadius: '16px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '100%',
+            textAlign: 'center',
+            color: '#1e293b',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🎉</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 15px', color: '#047857', fontFamily: 'var(--font-serif)' }}>
+              स्वागत है! / Welcome!
+            </h3>
+            <p style={{ fontSize: '1rem', lineHeight: '1.6', whiteSpace: 'pre-line', margin: '0 0 25px', color: '#334155' }}>
+              {welcomeMessage}
+            </p>
+            <button 
+              onClick={clearWelcomeMessage}
+              style={{
+                backgroundColor: '#047857',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '10px 30px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+                boxShadow: '0 4px 6px -1px rgba(4, 120, 87, 0.3)'
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#065f46'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#047857'}
+            >
+              ठीक है / Continue
+            </button>
+          </div>
+        </div>
+      )}
     </Router>
   );
 }

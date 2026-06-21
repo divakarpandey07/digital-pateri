@@ -90,6 +90,13 @@ const ResidentSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  panCardNumber: {
+    type: String,
+    trim: true
+  },
+  age: {
+    type: Number
+  },
   familyId: {
     type: String,
     trim: true

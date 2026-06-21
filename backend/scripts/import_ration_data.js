@@ -138,6 +138,7 @@ const importRationData = async () => {
             name: m.nameEnglish,
             fatherName: m.fatherNameEnglish,
             dob: dob,
+            age: m.age,
             gender: m.gender,
             address: 'House No. Unknown', // Will propagate below
             mohalla: '',

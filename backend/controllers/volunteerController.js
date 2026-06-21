@@ -114,6 +114,15 @@ exports.getVolunteers = async (req, res, next) => {
       return vObj;
     });
 
+    // Sort Divakar Pandey to the very top
+    cleanedVolunteers.sort((a, b) => {
+      const aName = a.residentId && a.residentId.name ? a.residentId.name : '';
+      const bName = b.residentId && b.residentId.name ? b.residentId.name : '';
+      if (aName === 'Divakar Pandey') return -1;
+      if (bName === 'Divakar Pandey') return 1;
+      return 0;
+    });
+
     res.status(200).json({
       success: true,
       data: cleanedVolunteers

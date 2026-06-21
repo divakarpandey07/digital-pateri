@@ -38,6 +38,9 @@ export const useStore = create((set, get) => ({
   error: null,
   language: localStorage.getItem('pateri_lang') || 'en',
   residentProfile: null,
+  welcomeMessage: null,
+
+  clearWelcomeMessage: () => set({ welcomeMessage: null }),
 
   // Set language
   setLanguage: (lang) => {
@@ -54,11 +57,12 @@ export const useStore = create((set, get) => ({
     try {
       const res = await api.post('/auth/login', { email, password });
       const { token, user } = res.data.data;
+      const welcomeMessage = res.data.welcomeMessage || null;
       
       localStorage.setItem('pateri_token', token);
       localStorage.setItem('pateri_user', JSON.stringify(user));
       
-      set({ token, user, isLoading: false });
+      set({ token, user, welcomeMessage, isLoading: false });
       return true;
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
@@ -72,11 +76,12 @@ export const useStore = create((set, get) => ({
     try {
       const res = await api.post('/auth/register', { name, email, password, ward, voterId, mobile });
       const { token, user } = res.data.data;
+      const welcomeMessage = res.data.welcomeMessage || null;
       
       localStorage.setItem('pateri_token', token);
       localStorage.setItem('pateri_user', JSON.stringify(user));
       
-      set({ token, user, isLoading: false });
+      set({ token, user, welcomeMessage, isLoading: false });
       return true;
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed';
@@ -273,6 +278,7 @@ export const useStore = create((set, get) => ({
         return { success: true, needsAadhaar: true };
       }
       const { token, user } = res.data.data;
+      const welcomeMessage = res.data.welcomeMessage || null;
       
       localStorage.setItem('pateri_token', token);
       localStorage.setItem('pateri_user', JSON.stringify(user));
@@ -281,6 +287,7 @@ export const useStore = create((set, get) => ({
         token,
         user, 
         residentProfile: user.residentProfile,
+        welcomeMessage,
         isLoading: false 
       });
       return { success: true, needsAadhaar: false };

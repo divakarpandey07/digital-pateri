@@ -171,6 +171,22 @@ const seedDatabase = async () => {
     };
     rawVoters.push(abhishekSinghObj);
 
+    // Divakar Pandey (Super Admin, Ward No. 01)
+    const divakarPandeyObj = {
+      ac: "213",
+      part: "92",
+      serial: 9995,
+      house: "142",
+      ward: "01",
+      name: "Divakar Pandey",
+      relationType: "Father",
+      relativeName: "Yogesh Pandey",
+      epic: "EPIC9995IN",
+      gender: "Male",
+      age: 25
+    };
+    rawVoters.push(divakarPandeyObj);
+
     // Build the residents array
     const residentsToCreate = [];
     const nameToResidentMap = new Map();
@@ -198,6 +214,8 @@ const seedDatabase = async () => {
         calculatedWard = '01';
       } else if (v.name === 'Abhishek Singh') {
         calculatedWard = '06';
+      } else if (v.name === 'Divakar Pandey') {
+        calculatedWard = '01';
       } else {
         if (v.part === '91') {
           calculatedWard = String(Math.min(5, Math.floor((hNum - 1) / 23) + 1)).padStart(2, '0');
@@ -245,7 +263,9 @@ const seedDatabase = async () => {
         latitude: 25.0200 + (Math.random() - 0.5) * 0.008,
         longitude: 83.5680 + (Math.random() - 0.5) * 0.008,
         aadhaarLast4: String(1000 + (idx % 9000)),
-        voterId: v.epic || ''
+        voterId: v.epic || '',
+        panCardNumber: '',
+        age: v.age
       };
 
       // Set specific details for leaders and staff
@@ -283,6 +303,14 @@ const seedDatabase = async () => {
         resObj.occupation = 'Dairy / Doodh Wale';
         resObj.mobile = '9151103687';
         resObj.reputationPoints = 150;
+      } else if (v.name === 'Divakar Pandey') {
+        resObj.mobile = '6394163494';
+        resObj.aadhaarLast4 = '1466';
+        resObj.panCardNumber = 'FXCPP8699N';
+        resObj.voterId = 'EPIC9995IN';
+        resObj.education = 'B.Tech/Graduate';
+        resObj.reputationPoints = 1000;
+        resObj.occupation = 'Software Engineer / Developer';
       }
 
       residentsToCreate.push(resObj);
@@ -481,11 +509,15 @@ const seedDatabase = async () => {
     console.log(`Seeded ${residentsToCreate.length} verified residents.`);
 
     console.log('Creating user credentials...');
+    // Find Divakar resident profile
+    const divakarResident = residentsToCreate.find(r => r.name === 'Divakar Pandey');
+
     // Create admin & roles
-    await User.create({
-      email: 'admin@pateri.in',
+    const superAdminUser = await User.create({
+      email: 'pandeydivakar07@gmail.com',
       password: 'admin123',
-      roles: ['Super Admin']
+      roles: ['Super Admin', 'Resident', 'Volunteer'],
+      residentProfile: divakarResident ? divakarResident._id : null
     });
 
     const mukhiyaUser = await User.create({
@@ -538,6 +570,7 @@ const seedDatabase = async () => {
     });
 
     // Update ownerId references on residents
+    if (divakarResident && superAdminUser) await Resident.findByIdAndUpdate(divakarResident._id, { ownerId: superAdminUser._id });
     if (reshadKhan) await Resident.findByIdAndUpdate(reshadKhan._id, { ownerId: mukhiyaUser._id });
     if (gyashuddin) await Resident.findByIdAndUpdate(gyashuddin._id, { ownerId: sarpanchUser._id });
     if (naushadKhan) await Resident.findByIdAndUpdate(naushadKhan._id, { ownerId: naushadUser._id });
@@ -758,6 +791,18 @@ const seedDatabase = async () => {
       { businessId: business1._id, userId: studentUser._id, rating: 5, comment: 'Achee dukan hai, sabhi gharelu samaan sahi daam par milte hain.' },
       { businessId: business2._id, userId: doctorUser._id, rating: 4, comment: 'Pappu ne mere hospital ke electrical panels bahut acche se theek kiya.' }
     ]);
+
+    if (divakarResident && superAdminUser) {
+      await Volunteer.create({
+        userId: superAdminUser._id,
+        residentId: divakarResident._id,
+        villageId: village._id,
+        skills: ['Full Stack Development', 'Technical Consulting', 'Website Design'],
+        availability: 'Daily',
+        category: 'Social Service',
+        phoneVisible: true
+      });
+    }
 
     await Volunteer.create({
       userId: studentUser._id,

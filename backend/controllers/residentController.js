@@ -7,7 +7,70 @@ const filterResidentFields = (resident, user) => {
 
   const obj = resident.toObject ? resident.toObject() : resident;
   
-  // Admin or profile owner → full data
+  // Privacy boundary for Divakar Pandey (Main details only visible to himself)
+  const isDivakarProfile = obj.name === 'Divakar Pandey';
+
+  if (isDivakarProfile) {
+    if (isOwner) {
+      return obj; // Divakar himself sees everything
+    }
+    // Anyone else (even other admins) cannot see his sensitive details
+    const cleanObj = { ...obj };
+    delete cleanObj.aadhaarLast4;
+    delete cleanObj.panCardNumber;
+    delete cleanObj.voterId;
+    delete cleanObj.rationCardNumber;
+    delete cleanObj.digilockerId;
+    delete cleanObj.ayushmanId;
+    delete cleanObj.pmKisanId;
+    delete cleanObj.landRecordId;
+    delete cleanObj.eshramId;
+    delete cleanObj.soilHealthCardId;
+
+    if (isAdmin) {
+      return cleanObj;
+    }
+    if (user) {
+      return {
+        _id: cleanObj._id,
+        residentId: cleanObj.residentId,
+        name: cleanObj.name,
+        fatherName: cleanObj.fatherName,
+        dob: cleanObj.dob,
+        age: cleanObj.age,
+        gender: cleanObj.gender,
+        occupation: cleanObj.occupation,
+        education: cleanObj.education,
+        bloodGroup: cleanObj.bloodGroup,
+        skills: cleanObj.skills,
+        ward: cleanObj.ward,
+        houseNo: cleanObj.houseNo,
+        address: cleanObj.address,
+        mohalla: cleanObj.mohalla,
+        mobile: cleanObj.mobile,
+        reputationPoints: cleanObj.reputationPoints,
+        verificationStatus: cleanObj.verificationStatus,
+        panchayatRole: cleanObj.panchayatRole,
+        photo: cleanObj.photo,
+        latitude: cleanObj.latitude,
+        longitude: cleanObj.longitude,
+        relations: cleanObj.relations,
+        isPublicProfile: cleanObj.isPublicProfile
+      };
+    }
+    return {
+      _id: cleanObj._id,
+      name: cleanObj.name,
+      gender: cleanObj.gender,
+      occupation: cleanObj.occupation,
+      ward: cleanObj.ward,
+      verificationStatus: cleanObj.verificationStatus,
+      panchayatRole: cleanObj.panchayatRole,
+      photo: cleanObj.photo
+    };
+  }
+
+  // Admin or profile owner → full data (for standard profiles)
   if (isAdmin || isOwner) {
     return obj;
   }
@@ -20,6 +83,7 @@ const filterResidentFields = (resident, user) => {
       name: obj.name,
       fatherName: obj.fatherName,
       dob: obj.dob,
+      age: obj.age,
       gender: obj.gender,
       occupation: obj.occupation,
       education: obj.education,
