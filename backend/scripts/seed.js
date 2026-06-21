@@ -56,7 +56,7 @@ const normalizeName = (name) => {
     .replace(/[^a-z0-9]/g, '');
 };
 
-const runSeeder = async () => {
+const seedDatabase = async () => {
   try {
     console.log('Connecting to database...');
     await mongoose.connect(MONGO_URI);
@@ -103,8 +103,7 @@ const runSeeder = async () => {
     console.log('Loading real voters roster from voters.json...');
     const votersPath = path.join(__dirname, 'voters.json');
     if (!fs.existsSync(votersPath)) {
-      console.error('voters.json not found in scripts directory!');
-      process.exit(1);
+      throw new Error('voters.json not found in scripts directory!');
     }
     const rawVoters = JSON.parse(fs.readFileSync(votersPath, 'utf8'));
 
@@ -185,6 +184,40 @@ const runSeeder = async () => {
       const birthYear = 2026 - v.age;
       const dob = new Date(`${birthYear}-01-01`);
 
+      const hNum = parseInt(v.house, 10) || 1;
+      let calculatedWard = '01';
+      
+      // Calculate ward based on part and house
+      if (v.name === 'Reshad Khan') {
+        calculatedWard = '04';
+      } else if (v.name === 'Gyashuddin') {
+        calculatedWard = '01';
+      } else if (v.name === 'Naushad Khan') {
+        calculatedWard = '03';
+      } else if (v.name === 'Satyam Kumar Singh') {
+        calculatedWard = '01';
+      } else if (v.name === 'Abhishek Singh') {
+        calculatedWard = '06';
+      } else {
+        if (v.part === '91') {
+          calculatedWard = String(Math.min(5, Math.floor((hNum - 1) / 23) + 1)).padStart(2, '0');
+        } else if (v.part === '92') {
+          calculatedWard = String(Math.min(10, Math.floor((hNum - 1) / 73) + 6)).padStart(2, '0');
+        } else if (v.part === '93') {
+          calculatedWard = String(Math.min(14, Math.floor((hNum - 1) / 7) + 11)).padStart(2, '0');
+        } else {
+          calculatedWard = '01';
+        }
+      }
+
+      // Determine mohalla based on ward
+      const w = parseInt(calculatedWard, 10);
+      let mohalla = 'Pateri Central';
+      if (w === 1 || w === 5 || w === 9 || w === 13) mohalla = 'Dalit Basti';
+      else if (w === 2 || w === 6 || w === 10 || w === 14) mohalla = 'Pipra Tola';
+      else if (w === 3 || w === 7 || w === 11) mohalla = 'Market Area';
+      else if (w === 4 || w === 8 || w === 12) mohalla = 'Purab Tola';
+
       const resObj = {
         _id,
         villageId: village._id,
@@ -193,10 +226,10 @@ const runSeeder = async () => {
         fatherName: v.relativeName,
         dob,
         gender: v.gender,
-        address: `House No. ${v.house}, Ward No. ${v.ward}, Pateri Tola`,
-        houseNo: `W${v.ward}-H${v.house}`,
-        mohalla: 'Pateri Tola',
-        ward: v.ward,
+        address: `House No. ${hNum}, Ward No. ${calculatedWard}, Mohalla ${mohalla}, Pateri`,
+        houseNo: `W${calculatedWard}-H${hNum}`,
+        mohalla,
+        ward: calculatedWard,
         occupation: 'Farmer', // default occupation
         skills: [],
         education: 'Matriculation',
@@ -1094,11 +1127,22 @@ const runSeeder = async () => {
     await Scheme.insertMany(schemesData);
 
     console.log('Database Seeding Completed Successfully!');
-    process.exit(0);
   } catch (error) {
     console.error('Database Seeding Failed:', error);
-    process.exit(1);
+    throw error;
   }
 };
 
-runSeeder();
+module.exports = { seedDatabase };
+
+if (require.main === module) {
+  seedDatabase()
+    .then(() => {
+      console.log('Seeding process completed.');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Seeding process failed:', err);
+      process.exit(1);
+    });
+}

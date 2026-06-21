@@ -178,16 +178,28 @@ const importRationData = async () => {
             p.doc.address = addr;
             p.doc.ward = ward;
             p.doc.mohalla = mohalla;
+            p.doc.houseNo = matchedWithAddress.doc.houseNo || `W${ward}-H${addr.match(/\d+/)?.[0] || '1'}`;
           }
         });
       } else {
         // If no family member matched, assign to Head's card info (default House No based on last 4 digits of card)
         const lastDigits = rationCardNumber.slice(-4);
         const houseNum = parseInt(lastDigits) % 200 || 1; // map card digits to house number 1-200
+        const wardNum = Math.min(14, ((houseNum - 1) % 14) + 1);
+        const wardStr = String(wardNum).padStart(2, '0');
+        
+        let mohalla = 'Pateri Central';
+        if (wardNum === 1 || wardNum === 5 || wardNum === 9 || wardNum === 13) mohalla = 'Dalit Basti';
+        else if (wardNum === 2 || wardNum === 6 || wardNum === 10 || wardNum === 14) mohalla = 'Pipra Tola';
+        else if (wardNum === 3 || wardNum === 7 || wardNum === 11) mohalla = 'Market Area';
+        else if (wardNum === 4 || wardNum === 8 || wardNum === 12) mohalla = 'Purab Tola';
+
         cardMemberProfiles.forEach(p => {
           if (p.doc.address === 'House No. Unknown') {
-            p.doc.address = `House No. ${houseNum}`;
-            p.doc.ward = '01'; // Default ward
+            p.doc.address = `House No. ${houseNum}, Ward No. ${wardStr}, Mohalla ${mohalla}, Pateri`;
+            p.doc.ward = wardStr;
+            p.doc.mohalla = mohalla;
+            p.doc.houseNo = `W${wardStr}-H${houseNum}`;
           }
         });
       }

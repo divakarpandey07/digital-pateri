@@ -13,6 +13,7 @@ function Home() {
   } = useStore();
 
   const updatesRef = useRef(null);
+  const [weather, setWeather] = React.useState({ temp: '32°C', status: language === 'hi' ? 'साफ़' : 'Clear' });
 
   useEffect(() => {
     if (villageId) {
@@ -21,6 +22,47 @@ function Home() {
       fetchJobs();
     }
   }, [villageId]);
+
+  useEffect(() => {
+    async function fetchWeather() {
+      try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.0210&longitude=83.5684&current=temperature_2m,weather_code&timezone=Asia%2FKolkata');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.current) {
+            const temp = Math.round(data.current.temperature_2m);
+            const code = data.current.weather_code;
+            let status = 'Clear';
+            if (code === 0) status = 'Clear';
+            else if (code >= 1 && code <= 3) status = 'Mainly Clear';
+            else if (code === 45 || code === 48) status = 'Foggy';
+            else if (code >= 51 && code <= 55) status = 'Drizzle';
+            else if (code >= 61 && code <= 65) status = 'Rainy';
+            else if (code >= 71 && code <= 75) status = 'Snowy';
+            else if (code >= 80 && code <= 82) status = 'Rain Showers';
+            else if (code >= 95 && code <= 99) status = 'Thunderstorm';
+            else status = 'Cloudy';
+
+            let statusStr = status;
+            if (language === 'hi') {
+              if (status === 'Clear') statusStr = 'साफ़';
+              else if (status === 'Mainly Clear') statusStr = 'लगभग साफ़';
+              else if (status === 'Foggy') statusStr = 'कोहरा';
+              else if (status === 'Drizzle') statusStr = 'बूंदाबांदी';
+              else if (status === 'Rainy') statusStr = 'बारिश';
+              else if (status === 'Rain Showers') statusStr = 'बौछारें';
+              else if (status === 'Thunderstorm') statusStr = 'आंधी-तूफान';
+              else statusStr = 'बादल छाए हैं';
+            }
+            setWeather({ temp: `${temp}°C`, status: statusStr });
+          }
+        }
+      } catch (err) {
+        console.error('Weather fetch error:', err);
+      }
+    }
+    fetchWeather();
+  }, [language]);
 
   useEffect(() => {
     const el = updatesRef.current;
@@ -107,7 +149,7 @@ function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.85rem', flex: 1, justifyContent: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '6px' }}>
                   <span>{language === 'hi' ? 'तापमान' : 'Temperature'}</span>
-                  <strong>32°C (Clear)</strong>
+                  <strong>{weather.temp} ({weather.status})</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '6px' }}>
                   <span>{language === 'hi' ? 'स्वास्थ्य शिविर' : 'Health Camp'}</span>
